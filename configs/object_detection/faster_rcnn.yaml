@@ -1,0 +1,98 @@
+image_path: /mnt/mldata2/iren_tmp/poster_detection_dataset/Poster_detect/img/img/
+label_path: /mnt/mldata2/iren_tmp/poster_detection_dataset/Poster_detect/img/ann/
+logs_folder: /mnt/mldata2/iren_tmp/pl_dataset/logs/
+class_idx_dict: /mnt/mldata2/iren_tmp/pl_dataset/logs/class_idx.pkl
+
+val_split: 0.1
+num_workers: 4
+
+num_classes: 2
+
+checkpoint_callback:
+  type: pytorch_lightning.callbacks.ModelCheckpoint
+  filepath: "weights"
+  monitor: val_iou
+  verbose: True
+  mode: max
+  save_top_k: -1
+
+trainer:
+  type: pytorch_lightning.Trainer
+  gpus: 1
+  max_epochs: 70
+  progress_bar_refresh_rate: 1
+  benchmark: True
+  gradient_clip_val: 5.0
+  num_sanity_val_steps: 2
+  sync_batchnorm: True
+
+train_parameters:
+  batch_size: 1
+
+val_parameters:
+  batch_size: 1
+
+train_aug:
+  transform:
+    __class_fullname__: albumentations.core.composition.Compose
+    bbox_params:
+      format: pascal_voc
+      min_area: 0
+      min_visibility: 0
+      label_fields:
+        - labels
+    keypoint_params: null
+    p: 1
+    transforms:
+      - __class_fullname__: albumentations.augmentations.transforms.HorizontalFlip
+        p: 0.5
+      - __class_fullname__: albumentations.augmentations.transforms.VerticalFlip
+        p: 0.5
+      - __class_fullname__: albumentations.augmentations.transforms.HueSaturationValue
+        hue_shift_limit: 0.2
+        sat_shift_limit: 0.2
+        val_shift_limit: 0.2
+        p: 0.5
+      - __class_fullname__: albumentations.augmentations.transforms.RandomBrightnessContrast
+        brightness_limit:
+          - -0.1
+          - 0.1
+        contrast_limit:
+          - -0.1
+          - 0.1
+        p: 0.5
+      - __class_fullname__: albumentations.pytorch.transforms.ToTensorV2
+        p: 1.0
+
+
+
+val_aug:
+  transform:
+    __class_fullname__: albumentations.core.composition.Compose
+    bbox_params:
+      format: pascal_voc
+      min_area: 0
+      min_visibility: 0
+      label_fields:
+        - labels
+    keypoint_params: null
+    p: 1
+    transforms:
+      - __class_fullname__: albumentations.pytorch.transforms.ToTensorV2
+        p: 1.0
+test_aug:
+  transform:
+    __class_fullname__: albumentations.core.composition.Compose
+    bbox_params:
+      format: pascal_voc
+      min_area: 0
+      min_visibility: 0
+      label_fields:
+        - labels
+    keypoint_params: null
+    p: 1
+    transforms:
+      - __class_fullname__: albumentations.pytorch.transforms.ToTensorV2
+        p: 1.0
+
+

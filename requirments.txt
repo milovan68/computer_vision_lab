@@ -1,0 +1,11 @@
+torch
+albumentations
+pytorch_lightning
+tqdm
+torchvision
+opencv-python
+Pillow
+yaml
+efficientnet-pytorch
+comet-ml
+pytorch_toolbelt
